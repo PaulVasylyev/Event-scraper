@@ -14,8 +14,43 @@ import requests
 import time
 import os
 
-NOTION_TOKEN = "SECRET_NotionToken"  # Dein Integration Token
-DATABASE_ID = "SECRET_NotionDatabaseLink"  # Deine Datenbank-ID
+try:
+    SECRET_NotionToken = os.environ["SECRET_NotionToken"]
+except KeyError:
+    # Dateinamen
+    files_to_delete = ["scraped_events.csv", "scraped_events.xlsx"]
+
+    for file in files_to_delete:
+        try:
+            os.remove(file)
+            print(f"🗑️ Datei gelöscht: {file}")
+        except FileNotFoundError:
+            print(f"⚠️ Datei nicht gefunden: {file}")
+        except Exception as e:
+            print(f"❌ Fehler beim Löschen von {file}: {e}")
+
+    SOME_SECRET = "NotionToken not available!"
+    sys.exit(1)
+try:
+    SECRET_NotionDatabaseLink = os.environ["SECRET_NotionDatabaseLink"]
+except KeyError:
+    # Dateinamen
+    files_to_delete = ["scraped_events.csv", "scraped_events.xlsx"]
+
+    for file in files_to_delete:
+        try:
+            os.remove(file)
+            print(f"🗑️ Datei gelöscht: {file}")
+        except FileNotFoundError:
+            print(f"⚠️ Datei nicht gefunden: {file}")
+        except Exception as e:
+            print(f"❌ Fehler beim Löschen von {file}: {e}")
+
+    SECRET_NotionDatabaseLink = "DatabaseLink not available!"
+    sys.exit(1)
+
+NOTION_TOKEN = f"{SECRET_NotionToken}"  # Dein Integration Token
+DATABASE_ID = f"{SECRET_NotionDatabaseLink}"  # Deine Datenbank-ID
 
 # === HEADER ===
 headers = {
@@ -171,7 +206,7 @@ if __name__ == "__main__":
     import_csv_to_notion("scraped_events.csv")
 
 # Dateinamen
-files_to_delete = ["scraped_events.csv", "notion_export.csv"]
+files_to_delete = ["scraped_events.csv", "notion_export.csv","scraped_events.xlsx"]
 
 for file in files_to_delete:
     try:
