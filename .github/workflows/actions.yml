@@ -24,7 +24,8 @@ jobs:
           
       - name: execute py script # run main.py
         env:
-          SOME_SECRET: ${{ secrets.SOME_SECRET }}
+          SECRET_NotionToken: ${{ secrets.SECRET_NotionToken }}
+          SECRET_NotionDatabaseLink: ${{ secrets.SECRET_NotionDatabaseLink }}
         run: python main.py
           
       - name: commit files
