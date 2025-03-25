@@ -25,7 +25,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 import pandas as pd
 from datetime import date
-import winsound
 
 # — Setup WebDriver (automatisch mit webdriver-manager) —
 service = Service(ChromeDriverManager().install())
@@ -85,9 +84,5 @@ df = pd.DataFrame(all_events)
 df.to_excel("scraped_events.xlsx", index=False)
 print(f"{len(all_events)} Events gespeichert in 'scraped_events.xlsx'")
 
-winsound.Beep(800, 200)  # 800 Hz für 300 ms
-
 # NotionAPI.py als Subskript ausführen
 subprocess.check_call([sys.executable, "NotionAPI.py"])
-
-winsound.Beep(800, 200)  # 800 Hz für 300 ms
