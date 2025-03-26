@@ -1,4 +1,4 @@
-name: run main.py
+name: run 🚀 Weekly Notion Updater.py
 
 on:
   schedule:
