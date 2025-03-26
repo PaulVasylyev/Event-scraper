@@ -19,12 +19,14 @@ for package in required_packages:
 # --- Imports nach der Installation ---
 import csv
 import time
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
 import pandas as pd
 from datetime import date
 import os
+
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 
 # — Setup WebDriver —
 chrome_path = os.getenv("CHROME_BIN", "/opt/chrome/chrome")
