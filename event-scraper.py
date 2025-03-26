@@ -42,13 +42,13 @@ service = Service(driver_path)
 driver = webdriver.Chrome(service=service, options=options)
 
 #import the scripts of the Websites to be included in the final excel
-import AppliedAI
-import TUM
-import TUM_Venture_Labs
-import Social_Startup_hub
-import Munich_Startup
-import LifeLong_Learning_TUM
-import ForTe
+import Websites.LifeLong_Learning_TUM as AppliedAI
+import Websites.TUM as TUM
+import Websites.TUM_Venture_Labs as TUM_Venture_Labs
+import Websites.Social_Startup_hub as Social_Startup_hub
+import Websites.Munich_Startup as Munich_Startup
+import Websites.LifeLong_Learning_TUM as LifeLong_Learning_TUM
+import Websites.LifeLong_Learning_TUM as ForTe
 
 import Datumsformatierung
 
