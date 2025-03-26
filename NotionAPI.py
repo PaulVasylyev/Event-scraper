@@ -21,7 +21,7 @@ CSV_PATH = "scraped_events.csv"  # Pfad zur CSV-Datei
 
 # === HEADER für Notion API ===
 headers = {
-    "Authorization": f"Bearer {NOTION_TOKEN}",
+    "Authorization": f"Bearer {SECRET_NotionToken}",
     "Content-Type": "application/json",
     "Notion-Version": "2022-06-28"
 }
