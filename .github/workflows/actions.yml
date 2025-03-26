@@ -18,23 +18,25 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Chrome & ChromeDriver (fixed version)
+            - name: Install Chrome and ChromeDriver (stable)
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget unzip curl
+          sudo apt-get install -y google-chrome-stable
 
-          # Install Chrome
-          CHROME_VERSION="122.0.6261.111"
-          curl -O https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/${CHROME_VERSION}/linux64/chrome-linux64.zip
-          unzip chrome-linux64.zip
-          sudo mv chrome-linux64 /opt/chrome
-          echo "CHROME_BIN=/opt/chrome/chrome" >> $GITHUB_ENV
+          # ChromeDriver-Version zur installierten Chrome-Version holen
+          CHROME_VERSION=$(google-chrome-stable --version | grep -oP '\d+\.\d+\.\d+')
+          DRIVER_VERSION=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" \
+              | jq -r --arg ver "$CHROME_VERSION" '.channels.Stable.downloads.chromedriver[] | select(.platform == "linux64") | .url')
 
-          # Install ChromeDriver
-          curl -O https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/${CHROME_VERSION}/linux64/chromedriver-linux64.zip
-          unzip chromedriver-linux64.zip
+          echo "Lade passenden ChromeDriver herunter:"
+          echo $DRIVER_VERSION
+
+          wget -O chromedriver.zip "$DRIVER_VERSION"
+          unzip chromedriver.zip
           sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
           sudo chmod +x /usr/local/bin/chromedriver
+
+          echo "CHROME_BIN=/usr/bin/google-chrome-stable" >> $GITHUB_ENV
           echo "CHROMEDRIVER_PATH=/usr/local/bin/chromedriver" >> $GITHUB_ENV
 
 
