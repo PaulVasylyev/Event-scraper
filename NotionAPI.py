@@ -15,8 +15,8 @@ import time
 import os
 
 # === KONFIGURATION ===
-SECRET_NotionToken = os.getenv("SECRET_NotionToken")
-SECRET_NotionDatabaseLink = os.getenv("SECRET_NotionDatabaseLink")
+NOTION_TOKEN = os.getenv("SECRET_NotionToken")
+DATABASE_ID = os.getenv("SECRET_NotionDatabaseLink")
 CSV_PATH = "scraped_events.csv"  # Pfad zur CSV-Datei
 
 # === HEADER für Notion API ===
