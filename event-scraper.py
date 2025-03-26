@@ -49,6 +49,8 @@ import Websites.Social_Startup_hub as Social_Startup_hub
 import Websites.Munich_Startup as Munich_Startup
 import Websites.LifeLong_Learning_TUM as LifeLong_Learning_TUM
 import Websites.LifeLong_Learning_TUM as ForTe
+import Websites.TUM_Venture_Labs_Eventbride as TUM_Venture_Labs_Eventbride
+import Websites.TUM_Venture_Labs_LuMa as TUM_Venture_Labs_LuMa
 
 import Datumsformatierung
 
@@ -62,6 +64,8 @@ all_events.extend(Social_Startup_hub.scrape())
 all_events.extend(Munich_Startup.scrape())
 all_events.extend(LifeLong_Learning_TUM.scrape())
 all_events.extend(ForTe.scrape())
+all_events.extend(TUM_Venture_Labs_Eventbride.scrape())
+all_events.extend(TUM_Venture_Labs_LuMa.scrape())
 
 seen = set()
 unique_events = []
