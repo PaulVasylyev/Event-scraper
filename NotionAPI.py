@@ -31,6 +31,7 @@ except KeyError:
 
     SOME_SECRET = "NotionToken not available!"
     sys.exit(1)
+
 try:
     SECRET_NotionDatabaseLink = os.environ["SECRET_NotionDatabaseLink"]
 except KeyError:
@@ -133,7 +134,7 @@ def import_csv_to_notion(csv_path):
 
 # === START
 if __name__ == "__main__":
-    import_csv_to_notion(CSV_PATH)
+    import_csv_to_notion("scraped_events.csv")
 
 # Dateinamen
 files_to_delete = ["scraped_events.csv", "notion_export.csv", "scraped_events.xlsx"]
