@@ -21,16 +21,22 @@ import csv
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 import pandas as pd
 from datetime import date
+import os
 
-# — Setup WebDriver (automatisch mit webdriver-manager) —
-service = Service(ChromeDriverManager().install())
-options = webdriver.ChromeOptions()
-options.add_argument("--headless")           # ohne UI (optional)
-options.add_argument("--disable-gpu")
+# — Setup WebDriver —
+chrome_path = os.getenv("CHROME_BIN", "/opt/chrome/chrome")
+driver_path = os.getenv("CHROMEDRIVER_PATH", "/usr/local/bin/chromedriver")
+
+options = Options()
+options.binary_location = chrome_path
+options.add_argument("--headless")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+
+service = Service(driver_path)
 driver = webdriver.Chrome(service=service, options=options)
 
 #import the scripts of the Websites to be included in the final excel
