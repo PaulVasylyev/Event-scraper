@@ -47,7 +47,7 @@ def create_page(row):
     date_obj = parse_date_range_iso(str(row["Datum"]))
 
     properties = {
-        "Titel": {
+        "Title": {
             "title": [{
                 "text": {"content": str(row["Titel"])}
             }]
@@ -73,12 +73,12 @@ def create_page(row):
     }
 
     if date_obj:
-        properties["Datum"] = {
+        properties["Date"] = {
             "date": date_obj
         }
 
     payload = {
-        "parent": {"database_id": DATABASE_ID},
+        "parent": {"database_id": SECRET_NotionDatabaseLink},
         "properties": properties
     }
 
