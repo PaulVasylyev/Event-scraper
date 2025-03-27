@@ -68,13 +68,11 @@ def format_datetime(dt):
 def try_manual_date(date_str, default_year):
     """
     Versucht, einen Datum-String manuell zu interpretieren, falls er einem einfachen Muster entspricht.
-    Zunächst wird eine eventuelle Jahresangabe am Ende entfernt (z. B. "25.6. 2025" -> "25.6").
+    Zunächst wird eine eventuell angehängte Jahresangabe entfernt (z. B. "25.6. 2025" -> "25.6").
     Unterstützt werden rein numerische Muster ("25.6") sowie solche mit Monatsnamen ("26. mar").
     """
-    # Entferne ein eventuell angehängtes Jahr
     clean_str = re.sub(r'\s+\d{4}$', '', date_str).strip()
     debug_print("try_manual_date, cleaned:", date_str, "->", clean_str)
-    # Rein numerisch: z. B. "25.6"
     m = re.fullmatch(r'(\d{1,2})\.(\d{1,2})', clean_str)
     if m:
         day, month = m.groups()
@@ -84,7 +82,6 @@ def try_manual_date(date_str, default_year):
             return dt
         except Exception as e:
             debug_print("Manual numeric conversion failed:", clean_str, e)
-    # Mit Monatsnamen: z. B. "26. mar"
     m = re.fullmatch(r'(\d{1,2})\.\s*([A-Za-z]+)', clean_str)
     if m:
         day, month_str = m.groups()
@@ -104,7 +101,7 @@ def try_manual_date(date_str, default_year):
 def parse_single_date(date_str, default_year=None):
     """
     Parst einen einzelnen Datum-String.
-    Zunächst werden deutsche Monatsnamen ersetzt und der String vorverarbeitet.
+    Zuerst werden deutsche Monatsnamen ersetzt und der String vorverarbeitet.
     Falls kein Jahr vorhanden ist, wird default_year angehängt.
     Scheitert der reguläre Parser, wird versucht, den String manuell zu interpretieren.
     """
@@ -128,7 +125,6 @@ def parse_single_date(date_str, default_year=None):
 def parse_date_range(date_str, org=None):
     """
     Parst einen Bereichs-Datum-String und gibt ihn als "start_iso - end_iso" zurück.
-    
     Unterstützte Beispiele:
       • "April 28, 2025 9:00 AM - May 23, 2025 5:00 PM"
       • "23.–26.6." oder "25.6" (TUM)
@@ -136,12 +132,10 @@ def parse_date_range(date_str, org=None):
       • "03 MAR 1:30 pm - 2:30 pm" bzw. "06 MAR 1:00 pm - 1:45 pm" (ForTe)
     """
     debug_print("parse_date_range input:", date_str)
-    # Normalisieren: Ersetze En-Dash, "Uhr" etc.
     date_str = date_str.replace("–", "-").replace("Uhr", "").replace("·", " ")
     date_str = re.sub(r'\s+', ' ', date_str).strip()
     debug_print("Normalized range string:", date_str)
     
-    # Sonderfall: Falls "@" vorhanden, separat behandeln
     if "@" in date_str:
         date_part, time_part = date_str.split("@", 1)
         date_part = date_part.strip()
@@ -157,13 +151,15 @@ def parse_date_range(date_str, org=None):
                 debug_print("Parsed range with '@':", result)
                 return result
     
-    # Zerlege an Bindestrichen (egal ob Leerzeichen vorhanden)
     parts = re.split(r'\s*-\s*', date_str)
     if len(parts) == 2:
         start_str, end_str = parts
         debug_print("Range parts:", start_str, "|", end_str)
-        
-        # Sonderfall TUM: Wenn der Startteil nur einen Tag enthält, den Monat aus dem Endteil übernehmen
+        # Falls im Endteil bereits am/pm vorkommt, aber nicht im Startteil, "pm" ergänzen.
+        if re.search(r'\b(am|pm)\b', end_str, re.IGNORECASE) and not re.search(r'\b(am|pm)\b', start_str, re.IGNORECASE):
+            start_str = start_str + " pm"
+            debug_print("Appended 'pm' to start_str:", start_str)
+        # Sonderfall TUM: Wenn der Startteil nur einen Tag enthält, Monat aus Endteil übernehmen.
         if re.fullmatch(r'\d{1,2}\.?', start_str):
             m = re.search(r'\d{1,2}\.(\d{1,2})\.?', end_str)
             if m:
@@ -171,7 +167,7 @@ def parse_date_range(date_str, org=None):
                 start_str = start_str.rstrip('.') + f".{month}"
                 debug_print("Adjusted TUM start_str:", start_str)
         
-        # Sonderfall ForTe: Falls der Endteil nur eine Uhrzeit enthält, Datum aus Start übernehmen
+        # Sonderfall ForTe: Falls der Endteil nur eine Uhrzeit enthält, Datum aus Start übernehmen.
         if re.fullmatch(r'\d{1,2}(:\d{2})?\s*(am|pm)?', end_str, flags=re.IGNORECASE):
             dt_start = parse_single_date(start_str, default_year=datetime.now().year)
             if dt_start:
