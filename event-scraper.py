@@ -64,9 +64,10 @@ all_events.extend(Social_Startup_hub.scrape())
 all_events.extend(Munich_Startup.scrape())
 all_events.extend(LifeLong_Learning_TUM.scrape())
 all_events.extend(ForTe.scrape())
+'''
 all_events.extend(TUM_Venture_Labs_Eventbride.scrape())
 all_events.extend(TUM_Venture_Labs_LuMa.scrape())
-
+'''
 seen = set()
 unique_events = []
 for event in all_events:
