@@ -40,7 +40,7 @@ options.add_argument("--disable-dev-shm-usage")
 
 service = Service(driver_path)
 driver = webdriver.Chrome(service=service, options=options)
-
+'''
 #import the scripts of the Websites to be included in the final excel
 import Websites.LifeLong_Learning_TUM as AppliedAI
 import Websites.TUM as TUM
@@ -90,7 +90,7 @@ print(f"{len(all_events)} Events gespeichert in 'scraped_events.csv'")
 df = pd.DataFrame(all_events)
 df.to_excel("scraped_events.xlsx", index=False)
 print(f"{len(all_events)} Events gespeichert in 'scraped_events.xlsx'")
-
+'''
 # Datumsformatierung in Datumsformatierung.py vornehmen
 #all_events = Datumsformatierung.process_events(all_events)
 subprocess.check_call([sys.executable, "Datumsformatierung.py"])
