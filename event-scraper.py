@@ -96,4 +96,4 @@ print(f"{len(all_events)} Events gespeichert in 'scraped_events.xlsx'")
 subprocess.check_call([sys.executable, "Datumsformatierung.py"])
 
 # NotionAPI.py als Subskript ausführen
-subprocess.check_call([sys.executable, "NotionAPI_neu.py"])
+subprocess.check_call([sys.executable, "NotionAPI.py"])
