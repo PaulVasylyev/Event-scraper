@@ -46,8 +46,8 @@ jobs:
           
       - name: execute py script # run event-scraper.py
         env:
-          SECRET_NotionToken: ${{ secrets.SECRET_NotionToken }}
-          SECRET_NotionDatabaseLink: ${{ secrets.SECRET_NotionDatabaseLink }}
+          SECRET_NotionToken: ${{ secrets.SECRET_NOTIONTOKEN }}
+          SECRET_NotionDatabaseLink: ${{ secrets.SECRET_NOTIONDATABASELINK }}
         run: python event-scraper.py
           
       - name: commit files
