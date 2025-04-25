@@ -16,20 +16,20 @@ import os
 
 FAILED_EVENTS = []       # Liste für fehlgeschlagene Uploads
 
-# === KONFIGURATION ===
-NOTION_TOKEN = "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"  # <-- dein Token hier 
-DATABASE_ID = "1c06bdf634078073b8b1f21bf475557d"       # <-- deine Notion-Datenbank-ID 
+## === KONFIGURATION ===
+SECRET_NotionToken = os.getenv("SECRET_NotionToken")
+SECRET_NotionDatabaseLink = os.getenv("SECRET_NotionDatabaseLink")
 CSV_PATH = "scraped_events_formatted.csv"  # Pfad zur CSV-Datei
 
 # === HEADER für Notion API ===
 headers = {
-    "Authorization": f"Bearer {NOTION_TOKEN}",
+    "Authorization": f"Bearer {SECRET_NotionToken}",
     "Content-Type": "application/json",
     "Notion-Version": "2022-06-28"
 }
 
-def get_database_rows(database_id):
-    url = f"https://api.notion.com/v1/databases/{database_id}/query"
+def get_database_rows(SECRET_NotionDatabaseLink):
+    url = f"https://api.notion.com/v1/databases/{SECRET_NotionDatabaseLink}/query"
     rows = []
 
     while url:
@@ -54,8 +54,8 @@ def extract_plain_text(property_obj):
     else:
         return ""
 
-def notion_to_csv(database_id, output_csv="notion_export.csv"):
-    rows = get_database_rows(database_id)
+def notion_to_csv(SECRET_NotionDatabaseLink, output_csv="notion_export.csv"):
+    rows = get_database_rows(SECRET_NotionDatabaseLink)
     data = []
 
     for row in rows:
@@ -79,7 +79,7 @@ def notion_to_csv(database_id, output_csv="notion_export.csv"):
     print(f"✅ Exportiert nach {output_csv}")
 
 # Notion-Daten exportieren
-notion_to_csv(DATABASE_ID)
+notion_to_csv(SECRET_NotionDatabaseLink)
 
 # Dateien laden
 scraped = pd.read_csv("scraped_events_formatted.csv")
@@ -117,7 +117,7 @@ def parse_date_range_iso(value):
 
 # === FUNKTION: Bereits vorhandene Events aus Notion abrufen
 def get_existing_events():
-    url = f"https://api.notion.com/v1/databases/{DATABASE_ID}/query"
+    url = f"https://api.notion.com/v1/databases/{SECRET_NotionDatabaseLink}/query"
     payload = {}
     existing_events = []
     has_more = True
@@ -166,7 +166,7 @@ def create_page(row):
     if date_obj:
         properties["Date"] = {"date": date_obj}
 
-    payload = {"parent": {"database_id": DATABASE_ID}, "properties": properties}
+    payload = {"parent": {"SECRET_NotionDatabaseLink": SECRET_NotionDatabaseLink}, "properties": properties}
 
     try:
         resp = requests.post(
