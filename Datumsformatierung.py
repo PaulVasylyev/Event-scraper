@@ -4,6 +4,7 @@ from dateutil import parser
 from dateutil.tz import gettz
 import dateutil.parser
 import pandas as pd
+import os
 
 DEBUG = True
 
@@ -460,3 +461,15 @@ if __name__ == '__main__':
     # --- In CSV speichern ---
     new_df.to_csv("scraped_events_formatted.csv", index=False, encoding="utf-8")
     print("Die Datei 'scraped_events_formatted.csv' wurde erstellt.")
+
+# Optional: Dateien löschen
+files_to_delete = ["scraped_events.csv", "scraped_events.xlsx"]
+
+for file in files_to_delete:
+    try:
+        os.remove(file)
+        print(f"🗑️ Datei gelöscht: {file}")
+    except FileNotFoundError:
+        print(f"⚠️ Datei nicht gefunden: {file}")
+    except Exception as e:
+        print(f"❌ Fehler beim Löschen von {file}: {e}")
