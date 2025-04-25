@@ -34,7 +34,7 @@ jobs:
           echo $DRIVER_VERSION
 
           wget -O chromedriver.zip "$DRIVER_VERSION"
-          unzip chromedriver.zip
+          unzip -o chromedriver.zip
           sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
           sudo chmod +x /usr/local/bin/chromedriver
 

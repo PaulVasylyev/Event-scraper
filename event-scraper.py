@@ -52,8 +52,6 @@ import Websites.LifeLong_Learning_TUM as ForTe
 import Websites.TUM_Venture_Labs_Eventbride as TUM_Venture_Labs_Eventbride
 import Websites.TUM_Venture_Labs_LuMa as TUM_Venture_Labs_LuMa
 
-import Datumsformatierung
-
 # Event-Daten sammeln
 all_events = []
 
@@ -64,10 +62,9 @@ all_events.extend(Social_Startup_hub.scrape())
 all_events.extend(Munich_Startup.scrape())
 all_events.extend(LifeLong_Learning_TUM.scrape())
 all_events.extend(ForTe.scrape())
-'''
 all_events.extend(TUM_Venture_Labs_Eventbride.scrape())
 all_events.extend(TUM_Venture_Labs_LuMa.scrape())
-'''
+
 seen = set()
 unique_events = []
 for event in all_events:
@@ -84,9 +81,6 @@ for event in all_events:
 
 all_events = unique_events
 
-# Datumsformatierung in Datumsformatierung.py vornehmen
-all_events = Datumsformatierung.process_events(all_events)
-
 # --- In CSV speichern ---
 df = pd.DataFrame(all_events)
 df.to_csv("scraped_events.csv", index=False, encoding="utf-8")
@@ -97,5 +91,9 @@ df = pd.DataFrame(all_events)
 df.to_excel("scraped_events.xlsx", index=False)
 print(f"{len(all_events)} Events gespeichert in 'scraped_events.xlsx'")
 
+# Datumsformatierung in Datumsformatierung.py vornehmen
+#all_events = Datumsformatierung.process_events(all_events)
+subprocess.check_call([sys.executable, "Datumsformatierung.py"])
+
 # NotionAPI.py als Subskript ausführen
-subprocess.check_call([sys.executable, "NotionAPI.py"])
+subprocess.check_call([sys.executable, "NotionAPI_neu.py"])

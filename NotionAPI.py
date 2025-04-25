@@ -14,10 +14,12 @@ import requests
 import time
 import os
 
+FAILED_EVENTS = []       # Liste für fehlgeschlagene Uploads
+
 # === KONFIGURATION ===
-NOTION_TOKEN = os.getenv("SECRET_NotionToken")
-DATABASE_ID = os.getenv("SECRET_NotionDatabaseLink")
-CSV_PATH = "scraped_events.csv"  # Pfad zur CSV-Datei
+NOTION_TOKEN = "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"  # <-- dein Token hier 
+DATABASE_ID = "1c06bdf634078073b8b1f21bf475557d"       # <-- deine Notion-Datenbank-ID 
+CSV_PATH = "scraped_events_formatted.csv"  # Pfad zur CSV-Datei
 
 # === HEADER für Notion API ===
 headers = {
@@ -80,7 +82,7 @@ def notion_to_csv(database_id, output_csv="notion_export.csv"):
 notion_to_csv(DATABASE_ID)
 
 # Dateien laden
-scraped = pd.read_csv("scraped_events.csv")
+scraped = pd.read_csv("scraped_events_formatted.csv")
 notion = pd.read_csv("notion_export.csv")
 
 # Normieren der Links (trimmen und in Kleinbuchstaben, damit der Vergleich funktioniert)
@@ -94,8 +96,8 @@ duplikate = pd.merge(scraped, notion, on=["Link"], how="inner")
 bereinigt = scraped[~scraped.set_index("Link").index.isin(duplikate.set_index("Link").index)]
 
 # Überschreiben der Originaldatei
-bereinigt.to_csv("scraped_events.csv", index=False, encoding="utf-8")
-print(f"✅ {len(duplikate)} Duplikate entfernt. Neue scraped_events.csv gespeichert mit {len(bereinigt)} Zeilen.")
+bereinigt.to_csv("scraped_events_formatted.csv", index=False, encoding="utf-8")
+print(f"✅ {len(duplikate)} Duplikate entfernt. Neue scraped_events_formatted.csv gespeichert mit {len(bereinigt)} Zeilen.")
 
 # === FUNKTION: ISO-Datum mit oder ohne Enddatum parsen
 def parse_date_range_iso(value):
@@ -150,66 +152,74 @@ def get_existing_events():
 
 # === FUNKTION: Notion-Page erstellen
 def create_page(row):
+    """Legt einen Datensatz in Notion an.
+       Scheitert der Aufruf, wird das Event + Fehlermeldung gespeichert."""
     date_obj = parse_date_range_iso(str(row["Datum"]))
 
     properties = {
-        "Title": {
-            "title": [{
-                "text": {"content": str(row["Titel"])}
-            }]
-        },
-        "Organisation": {
-            "rich_text": [{
-                "text": {"content": str(row["Organisation"])}
-            }]
-        },
-        "Location": {
-            "rich_text": [{
-                "text": {"content": str(row["Location"])}
-            }]
-        },
-        "Description": {
-            "rich_text": [{
-                "text": {"content": str(row["Description"])}
-            }]
-        },
-        "Link": {
-            "url": str(row["Link"])
-        }
+        "Title":        {"title":      [{"text": {"content": str(row["Titel"])}}]},
+        "Organisation": {"rich_text":  [{"text": {"content": str(row["Organisation"])}}]},
+        "Location":     {"rich_text":  [{"text": {"content": str(row["Location"])}}]},
+        "Description":  {"rich_text":  [{"text": {"content": str(row["Description"])}}]},
+        "Link":         {"url": str(row["Link"])}
     }
-
     if date_obj:
-        properties["Date"] = {
-            "date": date_obj
-        }
+        properties["Date"] = {"date": date_obj}
 
-    payload = {
-        "parent": {"database_id": DATABASE_ID},
-        "properties": properties
-    }
+    payload = {"parent": {"database_id": DATABASE_ID}, "properties": properties}
 
-    response = requests.post("https://api.notion.com/v1/pages", headers=headers, json=payload)
-
-    if response.status_code != 200:
-        print("❌ Fehler:", response.status_code, response.text)
-    else:
-        print("✅ Hinzugefügt:", row["Organisation"])
+    try:
+        resp = requests.post(
+            "https://api.notion.com/v1/pages",
+            headers=headers,
+            json=payload,
+            timeout=15          # Netzwerk-Timeout
+        )
+        if resp.status_code != 200:
+            # Fehler protokollieren, aber Programm weiterführen
+            FAILED_EVENTS.append({
+                "Titel": row["Titel"],
+                "Datum": row["Datum"],
+                "Fehlercode": resp.status_code,
+                "Fehlertext": resp.text
+            })
+            print(f"❌ Fehler {resp.status_code}: {row['Titel']} → geloggt")
+        else:
+            print("✅ Hinzugefügt:", row["Titel"])
+    except Exception as e:
+        # Unvorhergesehene Ausnahmen ebenfalls festhalten
+        FAILED_EVENTS.append({
+            "Titel": row["Titel"],
+            "Datum": row["Datum"],
+            "Fehlercode": "Exception",
+            "Fehlertext": str(e)
+        })
+        print(f"❌ Exception bei {row['Titel']} → geloggt")
 
 # === FUNKTION: CSV verarbeiten und in Notion importieren
 def import_csv_to_notion(csv_path):
     df = pd.read_csv(csv_path)
-    df.columns = [col.strip() for col in df.columns]
+    df.columns = [c.strip() for c in df.columns]
 
     for _, row in df.iterrows():
         create_page(row)
-        time.sleep(0.3)  # API-Ratenlimit beachten
+        time.sleep(0.3)          # API-Rate-Limit
+
+    # Nach der Schleife evtl. Fehlversuche sichern
+    if FAILED_EVENTS:
+        pd.DataFrame(FAILED_EVENTS).to_csv(
+            "notion_failed_events.csv", index=False, encoding="utf-8"
+        )
+        print(f"⚠️ {len(FAILED_EVENTS)} fehlgeschlagene Events in notion_failed_events.csv gespeichert")
+    else:
+        print("🎉 Alle Events erfolgreich übertragen")
 
 # === START
 if __name__ == "__main__":
     import_csv_to_notion(CSV_PATH)
 
-# Dateien löschen
-files_to_delete = ["scraped_events.csv", "notion_export.csv", "scraped_events.xlsx"]
+# Optional: Dateien löschen
+files_to_delete = ["scraped_events_formatted.csv", "notion_export.csv", "scraped_events_formatted.xlsx"]
 
 for file in files_to_delete:
     try:
