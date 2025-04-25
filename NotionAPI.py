@@ -17,8 +17,8 @@ import os
 FAILED_EVENTS = []       # Liste für fehlgeschlagene Uploads
 
 # === KONFIGURATION ===
-NOTION_TOKEN = os.getenv("SECRET_NOTIONTOKEN")
-DATABASE_ID = os.getenv("SECRET_NOTIONDATABASELINK")
+NOTION_TOKEN = os.getenv("SECRET_NotionToken")
+DATABASE_ID = os.getenv("SECRET_NotionDatabaseLink")
 CSV_PATH = "scraped_events_formatted.csv"  # Pfad zur CSV-Datei
 
 # === HEADER für Notion API ===
