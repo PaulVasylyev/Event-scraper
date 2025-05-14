@@ -35,8 +35,8 @@ jobs:
           wget "$DOWNLOAD_BASE/$VERSION/linux64/chrome-linux64.zip"
           wget "$DOWNLOAD_BASE/$VERSION/linux64/chromedriver-linux64.zip"
 
-          unzip chrome-linux64.zip
-          unzip chromedriver-linux64.zip
+          unzip -o chrome-linux64.zip
+          unzip -o chromedriver-linux64.zip
 
           sudo mv chrome-linux64 /opt/chrome
           sudo ln -sf /opt/chrome/chrome /usr/bin/google-chrome
