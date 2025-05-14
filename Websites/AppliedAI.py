@@ -1,19 +1,27 @@
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 import time
-
-from selenium.webdriver.chrome.options import Options
-options = Options()
-options.add_argument("--headless")  # Kein GUI
-options.add_argument("--disable-gpu")  # Für Kompatibilität
-options.add_argument("--window-size=1920,1080")  # Optional für konsistentes Verhalten
+import os
 
 def scrape():
     # Scrapt Event-Daten von AppliedAI und gibt sie als Liste von Dictionaries zurück.
-    driver = webdriver.Chrome(options=options)
+    options = Options()
+    options.add_argument("--headless")             # Kein GUI
+    options.add_argument("--disable-gpu")          # Für Kompatibilität
+    options.add_argument("--window-size=1920,1080")# Optional für konsistentes Verhalten
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+
+    driver_path = os.getenv("CHROMEDRIVER_PATH", "/usr/local/bin/chromedriver")
+    service    = Service(driver_path)
+
     driver.get("https://community.appliedai.de/events?view=list")
     time.sleep(2)
+
+    driver = webdriver.Chrome(service=service, options=options)
 
     # Cookie-Banner ggf. schließen
     try:
