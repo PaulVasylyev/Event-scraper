@@ -27,6 +27,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 
 # — Setup WebDriver —
 chrome_path = os.getenv("CHROME_BIN", "/opt/chrome/chrome")
@@ -38,9 +39,8 @@ options.add_argument("--headless")
 options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
 
-service = Service(driver_path)
-driver = webdriver.Chrome(service=service, options=options)
-'''
+driver = webdriver.Chrome(service=Service(ChromeDriverManager(version="135.0.7049.114").install()), options=options)
+
 #import the scripts of the Websites to be included in the final excel
 import Websites.LifeLong_Learning_TUM as AppliedAI
 import Websites.TUM as TUM
@@ -90,7 +90,7 @@ print(f"{len(all_events)} Events gespeichert in 'scraped_events.csv'")
 df = pd.DataFrame(all_events)
 df.to_excel("scraped_events.xlsx", index=False)
 print(f"{len(all_events)} Events gespeichert in 'scraped_events.xlsx'")
-'''
+
 # Datumsformatierung in Datumsformatierung.py vornehmen
 #all_events = Datumsformatierung.process_events(all_events)
 subprocess.check_call([sys.executable, "Datumsformatierung.py"])
