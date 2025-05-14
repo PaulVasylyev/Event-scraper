@@ -44,7 +44,7 @@ import tempfile
 user_data_dir = tempfile.mkdtemp()
 options.add_argument(f"--user-data-dir={user_data_dir}")
 
-driver = webdriver.Chrome(service=Service("/usr/local/bin/chromedriver"), options=options)
+#driver = webdriver.Chrome(service=Service("/usr/local/bin/chromedriver"), options=options)
 
 #import the scripts of the Websites to be included in the final excel
 import Websites.LifeLong_Learning_TUM as AppliedAI
