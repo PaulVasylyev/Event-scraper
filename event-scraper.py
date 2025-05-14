@@ -39,7 +39,7 @@ options.add_argument("--headless")
 options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
 
-driver = webdriver.Chrome(service=Service(ChromeDriverManager(version="135").install()), options=options)
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 #import the scripts of the Websites to be included in the final excel
 import Websites.LifeLong_Learning_TUM as AppliedAI
