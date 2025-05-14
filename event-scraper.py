@@ -39,10 +39,6 @@ options.add_argument("--headless=new")
 options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
 
-# Nutze temporäres User-Verzeichnis
-import tempfile
-user_data_dir = tempfile.mkdtemp()
-options.add_argument(f"--user-data-dir={user_data_dir}")
 
 #driver = webdriver.Chrome(service=Service("/usr/local/bin/chromedriver"), options=options)
 
