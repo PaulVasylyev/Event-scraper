@@ -21,15 +21,28 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Update Chrome to v136
+      - name: Install latest compatible Chrome and ChromeDriver (v136)
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget unzip
-          wget https://storage.googleapis.com/chrome-for-testing-public/136.0.7326.0/linux64/chrome-linux64.zip
+          sudo apt-get install -y wget unzip jq
+
+          # Hole passende ChromeDriver-Version für Linux
+          DOWNLOAD_BASE="https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing"
+          VERSION=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq -r '.channels.Stable.version')
+
+          echo "Using Chrome/ChromeDriver version: $VERSION"
+
+          wget "$DOWNLOAD_BASE/$VERSION/linux64/chrome-linux64.zip"
+          wget "$DOWNLOAD_BASE/$VERSION/linux64/chromedriver-linux64.zip"
+
           unzip chrome-linux64.zip
-          sudo mv chrome-linux64 /opt/google/chrome
-          sudo ln -sf /opt/google/chrome/chrome /usr/bin/google-chrome
-          sudo ln -sf /opt/google/chrome/chrome /usr/bin/google-chrome-stable
+          unzip chromedriver-linux64.zip
+
+          sudo mv chrome-linux64 /opt/chrome
+          sudo ln -sf /opt/chrome/chrome /usr/bin/google-chrome
+          sudo ln -sf /opt/chrome/chrome /usr/bin/google-chrome-stable
+          sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
+          sudo chmod +x /usr/local/bin/chromedriver
 
       - name: Install dependencies
         run: pip install -r requirements.txt
